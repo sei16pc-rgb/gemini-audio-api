@@ -39,8 +39,9 @@ class handler(BaseHTTPRequestHandler):
                 text = "Webサイトの内容を取得できませんでした。"
 
             # 2. Gemini API へ直接リクエスト (SDKを使わずREST APIを使用)
-            # gemini-2.0-flash ではなく、1.5-flash に強制的に変更します
-            gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
+            # API バージョンを v1 に固定し、モデル名を指定
+            gemini_url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={API_KEY}"
+            
             payload = {
                 "contents": [{
                     "parts": [{"text": f"以下の内容を日本語で要約してください：\n\n{text}"}]
@@ -69,6 +70,7 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'text/plain')
         self.end_headers()
         self.wfile.write("API is active".encode())
+
 
 
 
