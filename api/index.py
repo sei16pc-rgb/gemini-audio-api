@@ -3,11 +3,9 @@ import json
 import os
 import requests
 from bs4 import BeautifulSoup
-from google import genai
 
 # 環境変数の取得
 API_KEY = os.environ.get("GEMINI_API_KEY")
-client = genai.Client(api_key=API_KEY)
 
 class handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
@@ -18,64 +16,57 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_POST(self):
-        # CORS対策：最初に必ず送る
         self.send_response(200)
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Content-Type', 'application/json')
         self.end_headers()
 
         try:
-            # 1. リクエストボディの解析
             content_length = int(self.headers.get('Content-Length', 0))
             post_data = self.rfile.read(content_length)
             data = json.loads(post_data)
             target_url = data.get('url')
 
-            # 2. スクレイピング
+            # 1. スクレイピング
             try:
                 res = requests.get(target_url, timeout=10)
                 res.encoding = res.apparent_encoding
                 soup = BeautifulSoup(res.text, 'html.parser')
-                # 不要なタグを除去してテキスト抽出
                 for script in soup(["script", "style"]):
                     script.decompose()
-                text = soup.get_text()[:5000].strip()
-            except Exception as e:
-                text = f"スクレイピングエラー: {str(e)}"
+                text = soup.get_text()[:4000].strip()
+            except:
+                text = "Webサイトの内容を取得できませんでした。"
 
-            # 3. Gemini 1.5 Flash で生成（最も安定しているモデル）
-            prompt = f"以下の内容を日本語で短く要約してください：\n\n{text}"
+            # 2. Gemini API へ直接リクエスト (SDKを使わずREST APIを使用)
+            # これにより、ライブラリのバージョンに左右されずに通信できます
+            gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={API_KEY}"
             
-            # 最新ライブラリの標準的な呼び出し方
-            # モデル名の指定を文字列の完全一致(models/を自分でつける)にします
-            response = client.models.generate_content(
-                # model='models/gemini-1.5-flash', # ここを models/gemini-1.5-flash に固定
-                model='gemini-2.0-flash-exp',
-                contents=prompt
-            )
-
-            # 4. レスポンスの組み立て
-            # response.text が存在しない場合の安全策
-            summary = "要約を生成できませんでした。"
-            if response and response.text:
-                summary = response.text
-
-            result = {
-                "text": summary,
-                "audio": ""
+            payload = {
+                "contents": [{
+                    "parts": [{"text": f"以下の内容を日本語で要約してください：\n\n{text}"}]
+                }]
             }
+            
+            headers = {'Content-Type': 'application/json'}
+            response = requests.post(gemini_url, json=payload, headers=headers)
+            res_data = response.json()
+
+            # 3. レスポンス解析
+            if "candidates" in res_data:
+                summary = res_data["candidates"][0]["content"]["parts"][0]["text"]
+            else:
+                summary = f"APIエラー: {json.dumps(res_data)}"
+
+            result = {"text": summary, "audio": ""}
             self.wfile.write(json.dumps(result).encode('utf-8'))
 
         except Exception as e:
-            # プログラム上のエラーをブラウザに伝える
-            error_data = {"text": f"実行エラーが発生しました: {str(e)}", "audio": ""}
+            error_data = {"text": f"実行エラー: {str(e)}", "audio": ""}
             self.wfile.write(json.dumps(error_data).encode('utf-8'))
 
     def do_GET(self):
         self.send_response(200)
         self.send_header('Content-Type', 'text/plain')
         self.end_headers()
-        self.wfile.write("API is running".encode())
-
-
-
+        self.wfile.write("API is active".encode())
