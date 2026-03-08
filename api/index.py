@@ -49,8 +49,8 @@ class handler(BaseHTTPRequestHandler):
             # 最新ライブラリの標準的な呼び出し方
             # モデル名の指定を文字列の完全一致(models/を自分でつける)にします
             response = client.models.generate_content(
-                model='models/gemini-1.5-flash', # ここを models/gemini-1.5-flash に固定
-                # model='gemini-2.0-flash-exp',
+                # model='models/gemini-1.5-flash', # ここを models/gemini-1.5-flash に固定
+                model='gemini-2.0-flash-exp',
                 contents=prompt
             )
 
@@ -76,5 +76,6 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'text/plain')
         self.end_headers()
         self.wfile.write("API is running".encode())
+
 
 
