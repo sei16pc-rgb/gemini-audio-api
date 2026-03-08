@@ -76,3 +76,9 @@ class handler(BaseHTTPRequestHandler):
             self.end_headers()
 
             self.wfile.write(json.dumps({"error": str(e)}).encode())
+def do_GET(self):
+        # GETリクエストが来たら「動いてるよ！」と返す
+        self.send_response(200)
+        self.send_header('Content-Type', 'text/plain')
+        self.end_headers()
+        self.wfile.write("API is running! Please use POST method.".encode())
