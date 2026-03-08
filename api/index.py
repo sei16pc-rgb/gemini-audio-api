@@ -46,7 +46,8 @@ class handler(BaseHTTPRequestHandler):
             
             # 安全のため try-except で囲む
             response = client.models.generate_content(
-                model="gemini-2.0-flash",
+                #model="gemini-2.0-flash",
+                model="gemini-1.5-flash",
                 contents=prompt
             )
 
@@ -73,3 +74,4 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'text/plain')
         self.end_headers()
         self.wfile.write("API is active.".encode())
+
