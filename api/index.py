@@ -10,8 +10,13 @@ import base64
 API_KEY = os.environ.get("GEMINI_API_KEY")
 client = genai.Client(api_key=API_KEY)
 
-class handler(BaseHTTPRequestHandler):
-    # (do_OPTIONSは省略：元のままでOK)
+def do_OPTIONS(self):
+        # 501(Not Implemented)にならないように、200(OK)を返す
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.end_headers()
 
     def do_POST(self):
         content_length = int(self.headers['Content-Length'])
@@ -57,3 +62,4 @@ class handler(BaseHTTPRequestHandler):
             self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             self.wfile.write(json.dumps({"error": str(e)}).encode())
+
