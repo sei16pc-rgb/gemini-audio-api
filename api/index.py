@@ -48,9 +48,9 @@ class handler(BaseHTTPRequestHandler):
             response = client.models.generate_content(
                 #model="gemini-2.0-flash",
                 #model="gemini-1.5-flash",
-                model="gemini-1.5-flash",  # 'models/' をつけない、あるいはハイフンを確認
+                #model="gemini-1.5-flash",  # 'models/' をつけない、あるいはハイフンを確認
                 # もし上記でダメならこちら
-                # model="gemini-1.5-flash-002"
+                model="gemini-1.5-flash-002"
                 contents=prompt
             )
 
@@ -77,5 +77,6 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'text/plain')
         self.end_headers()
         self.wfile.write("API is active.".encode())
+
 
 
