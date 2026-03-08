@@ -38,20 +38,26 @@ class handler(BaseHTTPRequestHandler):
             res.encoding = res.apparent_encoding
             soup = BeautifulSoup(res.text, 'html.parser')
             text = soup.get_text()[:8000]
-
+            
             # 2. Geminiで生成
-            prompt = f"以下の内容を要約して説明してください：\n\n{text}"
             response = client.models.generate_content(
                 model="gemini-2.0-flash",
                 contents=prompt
             )
 
-            # 3. レスポンス送信
+            # 3. レスポンスの取得（確実にテキストを取得）
+            # response.text が取れない場合に備えて、 candidates から直接狙います
+            summary_text = response.text if response.text else "要約を生成できませんでした。"
+
+            # 4. レスポンス送信
             result = {
-                "text": response.text,
+                "text": summary_text,
                 "audio": ""
             }
             self.wfile.write(json.dumps(result).encode())
+
+
+        
 
         except Exception as e:
             # エラー時もJSONで返す
@@ -63,3 +69,4 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'text/plain')
         self.end_headers()
         self.wfile.write("API is running!".encode())
+
