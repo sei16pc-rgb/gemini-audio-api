@@ -52,6 +52,23 @@ class handler(BaseHTTPRequestHandler):
                 model="gemini-2.0-flash",
                 contents=prompt
             )
+
+            # 変更点：ここを詳細な確認に変更
+        if response.text:
+            summary_text = response.text
+        else:
+            # なぜテキストがないのかを特定する
+            finish_reason = response.candidates[0].finish_reason if response.candidates else "No candidates"
+            summary_text = f"エラー: 回答が生成されませんでした (理由: {finish_reason})"
+
+        result = {
+            "text": summary_text,
+            "audio": ""
+        }
+
+
+
+            
             # responseの中身自体をログに出す
             print(f"DEBUG: Geminiのレスポンス: {response}")
 
@@ -79,5 +96,6 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'text/plain')
         self.end_headers()
         self.wfile.write("API is running!".encode())
+
 
 
