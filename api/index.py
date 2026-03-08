@@ -40,7 +40,7 @@ class handler(BaseHTTPRequestHandler):
 
             # 2. Gemini API へ直接リクエスト (SDKを使わずREST APIを使用)
             # API バージョンを v1 に固定し、モデル名を指定
-            gemini_url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={API_KEY}"
+            gemini_url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-002:generateContent?key={API_KEY}"
             
             payload = {
                 "contents": [{
@@ -70,6 +70,7 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'text/plain')
         self.end_headers()
         self.wfile.write("API is active".encode())
+
 
 
 
