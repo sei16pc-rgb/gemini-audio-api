@@ -7,7 +7,7 @@ from google import genai
 
 # 環境変数の取得
 API_KEY = os.environ.get("GEMINI_API_KEY")
-client = genai.Client(api_key=API_KEY)
+client = genai.Client(api_key=API_KEY, http_options={'api_version': 'v1'})
 
 class handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
@@ -74,3 +74,4 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'text/plain')
         self.end_headers()
         self.wfile.write("API is running".encode())
+
