@@ -7,7 +7,7 @@ from google import genai
 
 # 環境変数の取得
 API_KEY = os.environ.get("GEMINI_API_KEY")
-client = genai.Client(api_key=API_KEY, http_options={'api_version': 'v1'})
+client = genai.Client(api_key=API_KEY)
 
 class handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
@@ -47,8 +47,10 @@ class handler(BaseHTTPRequestHandler):
             prompt = f"以下の内容を日本語で短く要約してください：\n\n{text}"
             
             # 最新ライブラリの標準的な呼び出し方
+            # モデル名の指定を文字列の完全一致(models/を自分でつける)にします
             response = client.models.generate_content(
-                model='gemini-1.5-flash',
+                model='models/gemini-1.5-flash', # ここを models/gemini-1.5-flash に固定
+                # model='gemini-2.0-flash-exp',
                 contents=prompt
             )
 
@@ -74,4 +76,5 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'text/plain')
         self.end_headers()
         self.wfile.write("API is running".encode())
+
 
