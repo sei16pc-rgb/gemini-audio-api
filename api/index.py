@@ -34,16 +34,26 @@ class handler(BaseHTTPRequestHandler):
             query = data.get('query', '内容を要約して説明してください')
 
             # 1. スクレイピング
-            res = requests.get(target_url, timeout=10)
-            res.encoding = res.apparent_encoding
-            soup = BeautifulSoup(res.text, 'html.parser')
-            text = soup.get_text()[:8000]
+            #res = requests.get(target_url, timeout=10)
+            #res.encoding = res.apparent_encoding
+            #soup = BeautifulSoup(res.text, 'html.parser')
+            #text = soup.get_text()[:8000]
+
+            #print(f"DEBUG: 取得したテキストの長さ: {len(text)}") # ログ確認用
+            
+            #if len(text) < 50:
+            #     raise Exception("Webサイトから内容を取得できませんでした（またはブロックされました）")
+            prompt = "「こんにちは」という挨拶を返してください。それだけでいいです。"
+
+
             
             # 2. Geminiで生成
             response = client.models.generate_content(
                 model="gemini-2.0-flash",
                 contents=prompt
             )
+            # responseの中身自体をログに出す
+            print(f"DEBUG: Geminiのレスポンス: {response}")
 
             # 3. レスポンスの取得（確実にテキストを取得）
             # response.text が取れない場合に備えて、 candidates から直接狙います
@@ -69,4 +79,5 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'text/plain')
         self.end_headers()
         self.wfile.write("API is running!".encode())
+
 
