@@ -34,10 +34,11 @@ class handler(BaseHTTPRequestHandler):
             text = soup.get_text()[:8000] # 文字数を少し減らして安定化
 
             # 2. Geminiで生成（AUDIOを指定）
-            prompt = f"以下の内容を要約して音声で説明してください：\n\n{text}"
+            # 音声出力に対応しているモデル名を明示
+            model_name = "models/gemini-2.0-flash-001" 
             
             response = client.models.generate_content(
-                model="gemini-2.0-flash",
+                model=model_name,
                 contents=prompt,
                 config=types.GenerateContentConfig(
                     response_modalities=["AUDIO"],
@@ -81,3 +82,4 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'text/plain')
         self.end_headers()
         self.wfile.write("API is running! Please use POST method.".encode())
+
