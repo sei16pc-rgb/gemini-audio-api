@@ -42,9 +42,9 @@ class handler(BaseHTTPRequestHandler):
             # gemini_url を以下に書き換え
             # gemini_url = f"https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key={API_KEY}"
             # 上記がダメならこちら
-            gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}" 
+            # gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}" 
             # 最終手段
-            # gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key={API_KEY}" 
+            gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key={API_KEY}" 
             
             payload = {
                 "contents": [{
@@ -74,5 +74,6 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'text/plain')
         self.end_headers()
         self.wfile.write("API is active".encode())
+
 
 
